@@ -98,7 +98,7 @@ function App() {
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-4">Contato</h3>
-                <p className="text-gray-400 text-sm">Email: contato@mednexus.com</p>
+                <p className="text-gray-400 text-sm">Email: mednexusoficial@gmail.com</p>
                 <p className="text-gray-400 text-sm">Telefone: (XX) XXXX-XXXX</p>
               </div>
             </div>
