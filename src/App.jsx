@@ -7,6 +7,7 @@ import VagasPage from './pages/VagasPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import CadastroPage from './pages/CadastroPage.jsx';
 import PublicarVagaPage from './pages/PublicarVagaPage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx'; // Import ProtectedRoute
 import './App.css';
 
 function App() {
@@ -74,7 +75,14 @@ function App() {
           <Route path="/vagas" element={<VagasPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/cadastro" element={<CadastroPage />} />
-          <Route path="/publicar-vaga" element={<PublicarVagaPage />} />
+          <Route 
+            path="/publicar-vaga" 
+            element={
+              <ProtectedRoute>
+                <PublicarVagaPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
 
         {/* Footer */}
