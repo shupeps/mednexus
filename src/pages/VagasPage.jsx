@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx';
 import { Input } from '@/components/ui/input.jsx';
 import { Badge } from '@/components/ui/badge.jsx';
@@ -9,81 +9,57 @@ import {
   Clock,
   DollarSign,
 } from 'lucide-react';
+import { supabase } from '../supabaseClient';
 
 function VagasPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
+  const [vagas, setVagas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const vagas = [
-    {
-      id: 1,
-      titulo: "Médico Plantonista - UTI",
-      hospital: "Hospital São Lucas",
-      localizacao: "São Paulo, SP",
-      salario: "R$ 8.000 - R$ 12.000",
-      tipo: "Plantão 24h",
-      especialidade: "UTI",
-      urgente: true
-    },
-    {
-      id: 2,
-      titulo: "Cardiologista",
-      hospital: "Clínica CardioVida",
-      localizacao: "Rio de Janeiro, RJ",
-      salario: "R$ 15.000 - R$ 20.000",
-      tipo: "CLT",
-      especialidade: "Cardiologia",
-      urgente: false
-    },
-    {
-      id: 3,
-      titulo: "Médico Emergencista",
-      hospital: "Hospital Municipal",
-      localizacao: "Belo Horizonte, MG",
-      salario: "R$ 6.000 - R$ 9.000",
-      tipo: "Plantão 12h",
-      especialidade: "Emergência",
-      urgente: true
-    },
-    {
-      id: 4,
-      titulo: "Pediatra",
-      hospital: "Hospital Infantil",
-      localizacao: "Brasília, DF",
-      salario: "R$ 10.000 - R$ 14.000",
-      tipo: "CLT",
-      especialidade: "Pediatria",
-      urgente: false
-    },
-    {
-      id: 5,
-      titulo: "Anestesiologista",
-      hospital: "Centro Cirúrgico Avançado",
-      localizacao: "Porto Alegre, RS",
-      salario: "R$ 18.000 - R$ 25.000",
-      tipo: "Plantão",
-      especialidade: "Anestesiologia",
-      urgente: true
-    },
-    {
-      id: 6,
-      titulo: "Médico do Trabalho",
-      hospital: "Empresa Industrial",
-      localizacao: "Curitiba, PR",
-      salario: "R$ 12.000 - R$ 16.000",
-      tipo: "CLT",
-      especialidade: "Medicina do Trabalho",
-      urgente: false
-    }
-  ];
+  useEffect(() => {
+    const fetchVagas = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('vagas')
+        .select('*');
+
+      if (error) {
+        setError(error.message);
+        setVagas([]);
+      } else {
+        setVagas(data);
+      }
+      setLoading(false);
+    };
+
+    fetchVagas();
+  }, []);
 
   const filteredVagas = vagas.filter(vaga => 
-    vaga.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vaga.especialidade.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vaga.hospital.toLowerCase().includes(searchTerm.toLowerCase())
+    (vaga.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vaga.especialidade?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vaga.hospital?.toLowerCase().includes(searchTerm.toLowerCase()))
   ).filter(vaga => 
-    selectedLocation === '' || vaga.localizacao.includes(selectedLocation)
+    selectedLocation === '' || vaga.localizacao?.includes(selectedLocation)
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white py-16">
+        <p className="text-gray-600 text-lg">Carregando vagas...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white py-16">
+        <p className="text-red-500 text-lg">Erro ao carregar vagas: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white py-16">
@@ -136,54 +112,54 @@ function VagasPage() {
 
         {/* Job Listings */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVagas.map((vaga) => (
-            <Card key={vaga.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-lg">{vaga.titulo}</CardTitle>
-                    <CardDescription className="text-blue-600 font-medium">
-                      {vaga.hospital}
-                    </CardDescription>
+          {filteredVagas.length > 0 ? (
+            filteredVagas.map((vaga) => (
+              <Card key={vaga.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{vaga.titulo}</CardTitle>
+                      <CardDescription className="text-blue-600 font-medium">
+                        {vaga.hospital}
+                      </CardDescription>
+                    </div>
+                    {vaga.urgente && (
+                      <Badge variant="destructive" className="text-xs">
+                        Urgente
+                      </Badge>
+                    )}
                   </div>
-                  {vaga.urgente && (
-                    <Badge variant="destructive" className="text-xs">
-                      Urgente
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="w-4 h-4 mr-2" />
-                    <span className="text-sm">{vaga.localizacao}</span>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center text-gray-600">
+                      <MapPin className="w-4 h-4 mr-2" />
+                      <span className="text-sm">{vaga.localizacao}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <DollarSign className="w-4 h-4 mr-2" />
+                      <span className="text-sm">{vaga.salario}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <Clock className="w-4 h-4 mr-2" />
+                      <span className="text-sm">{vaga.tipo}</span>
+                    </div>
+                    <div className="pt-2">
+                      <Badge variant="secondary">{vaga.especialidade}</Badge>
+                    </div>
                   </div>
-                  <div className="flex items-center text-gray-600">
-                    <DollarSign className="w-4 h-4 mr-2" />
-                    <span className="text-sm">{vaga.salario}</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <Clock className="w-4 h-4 mr-2" />
-                    <span className="text-sm">{vaga.tipo}</span>
-                  </div>
-                  <div className="pt-2">
-                    <Badge variant="secondary">{vaga.especialidade}</Badge>
-                  </div>
-                </div>
-                <Button className="w-full mt-4" variant="outline">
-                  Ver Detalhes
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <Button className="w-full mt-4" variant="outline">
+                    Ver Detalhes
+                  </Button>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-12 col-span-full">
+              <p className="text-gray-500 text-lg">Nenhuma vaga encontrada com os filtros selecionados.</p>
+            </div>
+          )}
         </div>
-
-        {filteredVagas.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">Nenhuma vaga encontrada com os filtros selecionados.</p>
-          </div>
-        )}
       </div>
     </div>
   );
