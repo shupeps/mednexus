@@ -356,36 +356,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">MedNexus</h3>
-              <p className="text-gray-400 text-sm">
-                Conectando médicos às melhores vagas.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Links Úteis</h3>
-              <ul className="space-y-2">
-                <li><a href="#vagas" className="text-gray-400 hover:text-white transition-colors">Vagas</a></li>
-                <li><a href="#como-funciona" className="text-gray-400 hover:text-white transition-colors">Como Funciona</a></li>
-                <li><a href="#depoimentos" className="text-gray-400 hover:text-white transition-colors">Depoimentos</a></li>
-                <li><a href="#contato" className="text-gray-400 hover:text-white transition-colors">Contato</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contato</h3>
-              <p className="text-gray-400 text-sm">Email: contato@mednexus.com</p>
-              <p className="text-gray-400 text-sm">Telefone: (XX) XXXX-XXXX</p>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500 text-sm">
-            © 2025 MedNexus. Todos os direitos reservados.
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
